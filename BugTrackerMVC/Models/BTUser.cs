@@ -11,7 +11,7 @@ namespace BugTrackerMVC.Models
         public string FirstName { get; set; }
 
         [Required]
-        [Display(Name = "First Name")]
+        [Display(Name = "Last Name")]
         public string LastName { get; set; } 
 
         [NotMapped]
