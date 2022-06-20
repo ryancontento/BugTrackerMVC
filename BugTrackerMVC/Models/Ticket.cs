@@ -48,7 +48,9 @@ namespace BugTrackerMVC.Models
         // Navigation properties
         public virtual Project Project { get; set; }
 
-        public virtual TicketType TicketType { get; set; }    
+        public virtual TicketType TicketType { get; set; }
+
+        public virtual TicketPriority TicketPriority { get; set; }
 
         public virtual TicketStatus TicketStatus { get; set; }
 

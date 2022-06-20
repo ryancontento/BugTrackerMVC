@@ -16,5 +16,7 @@ namespace BugTrackerMVC.Models
         public virtual ICollection<BTUser> Memebers { get; set; }
 
         public virtual ICollection<Project> Projects { get; set; }
+
+        public virtual ICollection<Invite> Invites { get; set; }
     }
 }
