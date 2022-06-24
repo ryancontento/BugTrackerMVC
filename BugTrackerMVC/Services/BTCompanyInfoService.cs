@@ -24,7 +24,7 @@ namespace BugTrackerMVC.Services
         public async Task<List<Project>> GetAllProjectsAsync(int companyId)
         {
             List<Project> result = new();
-            result = await _context.Projects.Where(u => u.CompanyId == companyId)
+            result = await _context.Projects.Where(p => p.CompanyId == companyId)
                                             .Include(p => p.Members)
                                             .Include(p => p.Tickets)
                                                 .ThenInclude(t => t.Comments)
