@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BugTrackerMVC.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220619184212_Data Models")]
-    partial class DataModels
+    [Migration("20220626120558_Initial_001")]
+    partial class Initial_001
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -48,15 +48,12 @@ namespace BugTrackerMVC.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("AvatarContentType")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<byte[]>("AvatarFileData")
-                        .IsRequired()
                         .HasColumnType("bytea");
 
                     b.Property<string>("AvatarFileName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int?>("CompanyId")
@@ -274,15 +271,12 @@ namespace BugTrackerMVC.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("ImageContentType")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<byte[]>("ImageFileData")
-                        .IsRequired()
                         .HasColumnType("bytea");
 
                     b.Property<string>("ImageFileName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
@@ -341,11 +335,9 @@ namespace BugTrackerMVC.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("DeveloperUserId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("OwnerUserId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("ProjectId")
@@ -375,6 +367,8 @@ namespace BugTrackerMVC.Data.Migrations
                     b.HasIndex("OwnerUserId");
 
                     b.HasIndex("ProjectId");
+
+                    b.HasIndex("TicketPriorityId");
 
                     b.HasIndex("TicketStatusId");
 
@@ -710,7 +704,7 @@ namespace BugTrackerMVC.Data.Migrations
             modelBuilder.Entity("BugTrackerMVC.Models.Invite", b =>
                 {
                     b.HasOne("BugTrackerMVC.Models.Company", "Company")
-                        .WithMany()
+                        .WithMany("Invites")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -788,19 +782,21 @@ namespace BugTrackerMVC.Data.Migrations
                 {
                     b.HasOne("BugTrackerMVC.Models.BTUser", "DeveloperUser")
                         .WithMany()
-                        .HasForeignKey("DeveloperUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DeveloperUserId");
 
                     b.HasOne("BugTrackerMVC.Models.BTUser", "OwnerUser")
                         .WithMany()
-                        .HasForeignKey("OwnerUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OwnerUserId");
 
                     b.HasOne("BugTrackerMVC.Models.Project", "Project")
                         .WithMany("Tickets")
                         .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BugTrackerMVC.Models.TicketPriority", "TicketPriority")
+                        .WithMany()
+                        .HasForeignKey("TicketPriorityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -821,6 +817,8 @@ namespace BugTrackerMVC.Data.Migrations
                     b.Navigation("OwnerUser");
 
                     b.Navigation("Project");
+
+                    b.Navigation("TicketPriority");
 
                     b.Navigation("TicketStatus");
 
@@ -937,6 +935,8 @@ namespace BugTrackerMVC.Data.Migrations
 
             modelBuilder.Entity("BugTrackerMVC.Models.Company", b =>
                 {
+                    b.Navigation("Invites");
+
                     b.Navigation("Memebers");
 
                     b.Navigation("Projects");

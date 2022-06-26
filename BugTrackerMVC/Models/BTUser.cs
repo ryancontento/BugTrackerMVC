@@ -8,11 +8,11 @@ namespace BugTrackerMVC.Models
     {
         [Required]
         [Display(Name = "First Name")]
-        public string FirstName { get; set; }
+        public string? FirstName { get; set; } //= String.Empty;
 
         [Required]
         [Display(Name = "Last Name")]
-        public string LastName { get; set; } 
+        public string? LastName { get; set; } //= String.Empty;
 
         [NotMapped]
         [Display(Name = "Full Name")]
@@ -20,22 +20,22 @@ namespace BugTrackerMVC.Models
 
         [NotMapped]
         [DataType(DataType.Date)]
-        public IFormFile AvatarFormFile { get; set; }
+        public IFormFile? AvatarFormFile { get; set; }
 
         [Display(Name = "Avatar")]
-        public string AvatarFileName { get; set; }
+        public string? AvatarFileName { get; set; } //= String.Empty;
 
-        public byte[] AvatarFileData { get; set; }
+        public byte[]? AvatarFileData { get; set; } //= { 0 };
 
         [Display(Name = "File Extension")]
-        public string AvatarContentType { get; set; }
+        public string? AvatarContentType { get; set; } //= String.Empty;
 
         public int? CompanyId { get; set; }
 
         // Navigation properties
-        public virtual Company Company { get; set; }
+        public virtual Company? Company { get; set; }
 
-        public virtual ICollection<Project> Projects { get; set; }
+        public virtual ICollection<Project>? Projects { get; set; }
 
     }
 }
