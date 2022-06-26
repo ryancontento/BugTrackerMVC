@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace BugTrackerMVC.Data.Migrations
 {
-    public partial class Initial_001 : Migration
+    public partial class InitialMigration1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -121,7 +121,7 @@ namespace BugTrackerMVC.Data.Migrations
                     AvatarFileName = table.Column<string>(type: "text", nullable: true),
                     AvatarFileData = table.Column<byte[]>(type: "bytea", nullable: true),
                     AvatarContentType = table.Column<string>(type: "text", nullable: true),
-                    CompanyId = table.Column<int>(type: "integer", nullable: true),
+                    CompanyId = table.Column<int>(type: "integer", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -144,7 +144,8 @@ namespace BugTrackerMVC.Data.Migrations
                         name: "FK_AspNetUsers_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -346,6 +347,7 @@ namespace BugTrackerMVC.Data.Migrations
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     Updated = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     Archived = table.Column<bool>(type: "boolean", nullable: false),
+                    ArchivedByProject = table.Column<bool>(type: "boolean", nullable: false),
                     ProjectId = table.Column<int>(type: "integer", nullable: false),
                     TicketTypeId = table.Column<int>(type: "integer", nullable: false),
                     TicketPriorityId = table.Column<int>(type: "integer", nullable: false),

@@ -30,7 +30,7 @@ namespace BugTrackerMVC.Services
 
 
             // Remove current PM if necessary
-            if(currentPM != null)
+            if (currentPM != null)
             {
                 try
                 {
@@ -91,9 +91,23 @@ namespace BugTrackerMVC.Services
         // Archive (delete)
         public async Task ArchiveProjectAsync(Project project)
         {
-            project.Archived = true;
-            _context.Update(project);
-            await _context.SaveChangesAsync();
+            try
+            {
+                project.Archived = true;
+                await UpdateProjectAsync(project);
+
+                foreach (Ticket ticket in project.Tickets)
+                {
+                    ticket.ArchivedByProject = true;
+                    _context.Update(ticket);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public async Task<List<Project>> GetAllProjectsByCompany(int companyId)
@@ -161,7 +175,7 @@ namespace BugTrackerMVC.Services
             Project project = await _context.Projects
                                             .Include(p => p.Members)
                                             .FirstOrDefaultAsync(p => p.Id == projectId);
-            foreach(BTUser member in project?.Members)
+            foreach (BTUser member in project?.Members)
             {
                 if (await _rolesService.IsUserInRoleAsync(member, Roles.ProjectManager.ToString()))
                 {
@@ -180,7 +194,7 @@ namespace BugTrackerMVC.Services
 
             foreach (var user in project.Members)
             {
-                if(await _rolesService.IsUserInRoleAsync(user, role))
+                if (await _rolesService.IsUserInRoleAsync(user, role))
                 {
                     members.Add(user);
                 }
@@ -191,12 +205,37 @@ namespace BugTrackerMVC.Services
         // Read (single record)
         public async Task<Project> GetProjectByIdAsync(int projectId, int companyId)
         {
-            Project project = await _context.Projects
-                .Include(p => p.Tickets)
-                .Include(p => p.Members)
-                .Include(p => p.ProjectPriority)
-                .FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
-            return project;
+            try
+            {
+                //    Project project = await _context.Projects
+                //.Include(p => p.Tickets)
+                //.Include(p => p.Members)
+                //.Include(p => p.ProjectPriority)
+                //.FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
+
+                Project project = await _context.Projects
+                                                .Include(p => p.Tickets)
+                                                    .ThenInclude(t => t.TicketPriority)
+                                                .Include(p => p.Tickets)
+                                                    .ThenInclude(t => t.TicketStatus)
+                                                 .Include(p => p.Tickets)
+                                                    .ThenInclude(t => t.TicketType)
+                                                 .Include(p => p.Tickets)
+                                                    .ThenInclude(t => t.DeveloperUser)
+                                                 .Include(p => p.Tickets)
+                                                    .ThenInclude(t => t.OwnerUser)
+                                                 .Include(p => p.Members)
+                                                 .Include(p => p.ProjectPriority)
+                                                 .FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
+
+                return project;
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         public Task<List<BTUser>> GetSubmittersOnProjectAsync(int projectId)
@@ -275,7 +314,7 @@ namespace BugTrackerMVC.Services
             {
                 foreach (BTUser member in project?.Members)
                 {
-                    if(await _rolesService.IsUserInRoleAsync(member, Roles.ProjectManager.ToString()))
+                    if (await _rolesService.IsUserInRoleAsync(member, Roles.ProjectManager.ToString()))
                     {
                         await RemoveProjectManagerAsync(member.Id, projectId);
                     }
@@ -295,7 +334,7 @@ namespace BugTrackerMVC.Services
                 List<BTUser> members = await GetProjectMembersByRoleAsync(projectId, role);
                 Project project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
 
-                foreach(BTUser btUser in members)
+                foreach (BTUser btUser in members)
                 {
                     try
                     {
@@ -308,7 +347,7 @@ namespace BugTrackerMVC.Services
                         throw;
                     }
                 }
-            } 
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"***** Error **** error removing users from project  --> {ex.Message}");
@@ -345,9 +384,39 @@ namespace BugTrackerMVC.Services
         // Update
         public async Task UpdateProjectAsync(Project project)
         {
-            _context.Update(project);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Update(project);
+                await _context.SaveChangesAsync();
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
+        public async Task RestoreProjectAsync(Project project)
+        {
+            try
+            {
+                project.Archived = false;
+                await UpdateProjectAsync(project);
+
+                foreach (Ticket ticket in project.Tickets)
+                {
+                    ticket.ArchivedByProject = false;
+                    _context.Update(ticket);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
     }
 }

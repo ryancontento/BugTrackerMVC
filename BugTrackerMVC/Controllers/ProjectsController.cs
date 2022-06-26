@@ -49,10 +49,9 @@ namespace BugTrackerMVC.Controllers
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .Include(p => p.Company)
-                .Include(p => p.ProjectPriority)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            int companyId = User.Identity.GetCompanyId().Value;
+            Project project = await _projectService.GetProjectByIdAsync(id.Value, companyId);
+
             if (project == null)
             {
                 return NotFound();
@@ -169,18 +168,18 @@ namespace BugTrackerMVC.Controllers
             return RedirectToAction("Edit");
         }
 
-        // GET: Projects/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: Projects/Archive/5
+        public async Task<IActionResult> Archive(int? id)
         {
             if (id == null || _context.Projects == null)
             {
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .Include(p => p.Company)
-                .Include(p => p.ProjectPriority)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            int companyId = User.Identity.GetCompanyId().Value;
+            var project = await _projectService.GetProjectByIdAsync(id.Value, companyId);
+
+
             if (project == null)
             {
                 return NotFound();
@@ -189,24 +188,64 @@ namespace BugTrackerMVC.Controllers
             return View(project);
         }
 
-        // POST: Projects/Delete/5
-        [HttpPost, ActionName("Delete")]
+        // POST: Projects/Archive/5
+        [HttpPost, ActionName("Archive")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> ArchiveConfirmed(int id)
         {
+            int companyId = User.Identity.GetCompanyId().Value;
+
             if (_context.Projects == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
             }
-            var project = await _context.Projects.FindAsync(id);
+            var project = await _projectService.GetProjectByIdAsync(id, companyId);
             if (project != null)
             {
-                _context.Projects.Remove(project);
+                _projectService.ArchiveProjectAsync(project);
             }
-            
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Projects/Restore/5
+        public async Task<IActionResult> Restore(int? id)
+        {
+            if (id == null || _context.Projects == null)
+            {
+                return NotFound();
+            }
+
+            int companyId = User.Identity.GetCompanyId().Value;
+            var project = await _projectService.GetProjectByIdAsync(id.Value, companyId);
+
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            return View(project);
+        }
+
+        // POST: Projects/Restore/5
+        [HttpPost, ActionName("Restore")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RestoreConfirmed(int id)
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            if (_context.Projects == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Projects'  is null.");
+            }
+            var project = await _projectService.GetProjectByIdAsync(id, companyId);
+            if (project != null)
+            {
+                _projectService.RestoreProjectAsync(project);
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
 
         private bool ProjectExists(int id)
         {
