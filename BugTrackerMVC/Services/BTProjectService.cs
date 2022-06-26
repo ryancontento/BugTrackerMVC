@@ -28,6 +28,7 @@ namespace BugTrackerMVC.Services
         {
             BTUser currentPM = await GetProjectManagerAsync(projectId);
 
+
             // Remove current PM if necessary
             if(currentPM != null)
             {
@@ -45,7 +46,8 @@ namespace BugTrackerMVC.Services
             // Add the new PM
             try
             {
-                await AddProjectManagerAsync(userId, projectId);
+                //await AddProjectManagerAsync(userId, projectId);
+                BTUser newPM = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
                 return true;
             }
             catch (Exception)
