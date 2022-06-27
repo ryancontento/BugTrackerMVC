@@ -193,7 +193,7 @@ namespace BugTrackerMVC.Services
                                                                 .ThenInclude(h => h.User)
                                                         .FirstOrDefaultAsync(p => p.Id == projectId);
 
-                List<TicketHistory> ticketHistory = project.Tickets.SelectMany(t => t.History).ToList();
+                List<TicketHistory> ticketHistory = project?.Tickets.SelectMany(t => t.History).ToList();
 
                 return ticketHistory;
             }
