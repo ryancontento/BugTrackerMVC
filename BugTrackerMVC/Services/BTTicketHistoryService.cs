@@ -187,13 +187,13 @@ namespace BugTrackerMVC.Services
         {
             try
             {
-                Project project = await _context.Projects.Where(p => p.Id == companyId)
+                Project project = await _context.Projects.Where(p => p.CompanyId == companyId)
                                                          .Include(p => p.Tickets)
-                                                            .ThenInclude(t => t.History)
-                                                                .ThenInclude(h => h.User)
-                                                        .FirstOrDefaultAsync(p => p.Id == projectId);
+                                                             .ThenInclude(t => t.History)
+                                                                 .ThenInclude(h => h.User)
+                                                         .FirstOrDefaultAsync(p => p.Id == projectId);
 
-                List<TicketHistory> ticketHistory = project?.Tickets.SelectMany(t => t.History).ToList();
+                List<TicketHistory> ticketHistory = project.Tickets.SelectMany(t => t.History).ToList();
 
                 return ticketHistory;
             }
