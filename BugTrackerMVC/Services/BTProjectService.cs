@@ -137,6 +137,7 @@ namespace BugTrackerMVC.Services
                                               .ToListAsync();
             return projects;
         }
+
         public async Task<List<Project>> GetAllProjectsByPriority(int companyId, string priorityName)
         {
             List<Project> projects = await GetAllProjectsByCompanyAsync(companyId);
@@ -303,6 +304,28 @@ namespace BugTrackerMVC.Services
             {
                 Console.WriteLine($"***** Error **** error getting user project list --> {ex.Message}");
                 return null;
+            }
+        }
+
+        public async Task<bool> IsAssignedProjectManagerAsync(string userId, int projectId)
+        {
+            try
+            {
+                string projectManagerId = (await GetProjectManagerAsync(projectId))?.Id;
+
+                if(projectManagerId == userId)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
 

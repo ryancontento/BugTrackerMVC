@@ -22,9 +22,9 @@ namespace BugTrackerMVC.Controllers
         private readonly IBTLookupService _lookupService;
         private readonly IBTTicketService _ticketService;
 
-        public TicketsController(ApplicationDbContext context, 
-                                UserManager<BTUser> userManager, 
-                                IBTProjectService projectService, 
+        public TicketsController(ApplicationDbContext context,
+                                UserManager<BTUser> userManager,
+                                IBTProjectService projectService,
                                 IBTLookupService lookupService,
                                 IBTTicketService ticketService)
         {
@@ -42,6 +42,40 @@ namespace BugTrackerMVC.Controllers
             return View(await applicationDbContext.ToListAsync());
         }
 
+        public async Task<IActionResult> MyTickets()
+        {
+            BTUser btUser = await _userManager.GetUserAsync(User);
+
+            List<Ticket> tickets = await _ticketService.GetTicketsByUserIdAsync(btUser.Id, btUser.CompanyId);
+
+            return View(tickets);
+        }
+
+        public async Task<IActionResult> AllTickets()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Ticket> tickets = await _ticketService.GetAllTicketsByCompanyAsync(companyId);
+
+            if (User.IsInRole(nameof(Roles.DemoUser)) || User.IsInRole(nameof(Roles.Submitter)))
+            {
+                return View(tickets.Where(t => t.Archived == false));
+            }
+            else
+            {
+                return View(tickets);
+            }
+        }
+
+        public async Task<IActionResult> ArchivedTickets()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Ticket> tickets = await _ticketService.GetArchivedTicketsAsync(companyId);
+
+            return View(tickets);
+        }
+
         // GET: Tickets/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -50,13 +84,8 @@ namespace BugTrackerMVC.Controllers
                 return NotFound();
             }
 
-            var ticket = await _context.Tickets
-                .Include(t => t.DeveloperUser)
-                .Include(t => t.OwnerUser)
-                .Include(t => t.Project)
-                .Include(t => t.TicketStatus)
-                .Include(t => t.TicketType)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Ticket ticket = await _ticketService.GetTicketByIdAsync(id.Value);
+
             if (ticket == null)
             {
                 return NotFound();
@@ -161,27 +190,27 @@ namespace BugTrackerMVC.Controllers
             // TODO: The commented out ModelState check below was breaking the post action
             //if (ModelState.IsValid)
             //{
-                BTUser btUser = await _userManager.GetUserAsync(User);
+            BTUser btUser = await _userManager.GetUserAsync(User);
 
-                try
+            try
+            {
+                ticket.Updated = DateTimeOffset.Now;
+                await _ticketService.UpdateTicketAsync(ticket);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await TicketExists(ticket.Id))
                 {
-                    ticket.Updated = DateTimeOffset.Now;
-                    await _ticketService.UpdateTicketAsync(ticket);
+                    return NotFound();
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!await TicketExists(ticket.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
+            }
 
-                // TODO: Add Ticket History
-                return RedirectToAction(nameof(Index));
+            // TODO: Add Ticket History
+            return RedirectToAction(nameof(Index));
             //}
 
             ViewData["TicketPriorityId"] = new SelectList(await _lookupService.GetTicketPrioritiesAsync(), "Id", "Name", ticket.TicketPriorityId);
