@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using BugTrackerMVC.Extensions;
 
 namespace BugTrackerMVC.Models
 {
@@ -21,7 +22,10 @@ namespace BugTrackerMVC.Models
         public string Description { get; set; }
 
         [NotMapped]
+        [DisplayName("Select a file")]
         [DataType(DataType.Upload)]
+        [MaxFileSize(1024 * 1024)]
+        [AllowedExtensions(new string[] { ".jpg", ".png", ".txt", ".md", ".doc", ".docx", ".xls", ".xlsx", ".pdf", ".ppt", ".pptx", ".html", ".css", ".zip" })] 
         public IFormFile FormFile { get; set; }
 
         [DisplayName("File Name")]
