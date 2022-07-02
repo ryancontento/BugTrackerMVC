@@ -167,7 +167,7 @@
                                 <div class="">
                                     <span class="date">@history.Created.ToString("dd MMM, yyyy")</span>
                                     <h6>@history.Description</h6>
-                                    <span>By: <a href="" title="@history.User.FullName"></a></span>
+                                    <span>By: <a href="" title="@history.User.FullName">@history.User.FullName</a></span>
                                     <div class="">
                                         <p>The ticket <b>@history.Property</b> was edited</p>
                                         <p>@($"Previous {history.Property}: {history.OldValue}")</p>
@@ -219,7 +219,7 @@
                                                     {
                                                         if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
                                                         {
-                                                            <a class="btn btn-xs btn-info" asp-action="AssignDeveloper" asp-controller="Tickets" asp-route-ticketId="@ticket.Id">Assign Dev</a>
+                                                            <a class="btn btn-xs btn-info" asp-action="AssignDeveloper" asp-controller="Tickets" asp-route-id="@ticket.Id">Assign Dev</a>
                                                         }
 
                                                     }

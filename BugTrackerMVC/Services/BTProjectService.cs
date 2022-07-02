@@ -171,7 +171,7 @@ namespace BugTrackerMVC.Services
                                                 .ThenInclude(t => t.Notifications)
                                              .Include(p => p.Tickets)
                                                 .ThenInclude(t => t.DeveloperUser)
-                                             .Include(p => p.Tickets) 
+                                             .Include(p => p.Tickets)
                                                 .ThenInclude(t => t.OwnerUser)
                                             .Include(p => p.Tickets)
                                                 .ThenInclude(t => t.TicketStatus)
@@ -263,6 +263,34 @@ namespace BugTrackerMVC.Services
             throw new NotImplementedException();
         }
 
+        public async Task<List<Project>> GetUnassignedProjectsAsync(int companyId)
+        {
+            List<Project> result = new();
+            List<Project> projects = new();
+
+            try
+            {
+                projects = await _context.Projects
+                                         .Include(p => p.ProjectPriority)
+                                         .Where(p => p.CompanyId == companyId).ToListAsync();
+
+                foreach (Project project in projects)
+                {
+                    if ((await GetProjectMembersByRoleAsync(project.Id, nameof(Roles.ProjectManager))).Count == 0)
+                    {
+                        result.Add(project);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return result;
+        }
+
         public async Task<List<BTUser>> GetUsersNotOnProjectAsync(int projectId, int companyId)
         {
             List<BTUser> users = await _context.Users.Where(u => u.Projects.All(p => p.Id != projectId)).ToListAsync();
@@ -313,7 +341,7 @@ namespace BugTrackerMVC.Services
             {
                 string projectManagerId = (await GetProjectManagerAsync(projectId))?.Id;
 
-                if(projectManagerId == userId)
+                if (projectManagerId == userId)
                 {
                     return true;
                 }
