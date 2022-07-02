@@ -50,6 +50,20 @@ namespace BugTrackerMVC.Services
             }
         }
 
+        public async Task AddTicketCommentAsync(TicketComment ticketComment)
+        {
+            try
+            {
+                await _context.AddAsync(ticketComment);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         public async Task AssignTicketAsync(int ticketId, string userId)
         {
             Ticket ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
