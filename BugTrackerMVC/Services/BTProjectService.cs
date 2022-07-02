@@ -47,7 +47,8 @@ namespace BugTrackerMVC.Services
             try
             {
                 //await AddProjectManagerAsync(userId, projectId);
-                BTUser newPM = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                //BTUser newPM = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+                await AddUserToProjectAsync(userId, projectId);
                 return true;
             }
             catch (Exception)
