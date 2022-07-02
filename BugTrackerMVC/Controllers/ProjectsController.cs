@@ -95,6 +95,7 @@ namespace BugTrackerMVC.Controllers
             return View(projects);
         }
 
+        [HttpGet]
         public async Task<IActionResult> AssignPM(int projectId)
         {
             int companyId = User.Identity.GetCompanyId().Value;
@@ -119,6 +120,51 @@ namespace BugTrackerMVC.Controllers
             }
 
             return RedirectToAction(nameof(AssignPM), new { projectId = model.Project.Id });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AssignMembers(int id)
+        {
+            ProjectMembersViewModel model = new();
+            int companyId = User.Identity.GetCompanyId().Value;
+            model.Project = await _projectService.GetProjectByIdAsync(id, companyId);
+
+            List<BTUser> developers = await _roleService.GetUsersInRoleAsync(nameof(Roles.Developer), companyId);
+            List<BTUser> submitters = await _roleService.GetUsersInRoleAsync(nameof(Roles.Submitter), companyId);
+
+            List<BTUser> companyMembers = developers.Concat(submitters).ToList();
+
+            List<string> projectMembers = model.Project.Members.Select(m => m.Id).ToList();
+            model.Users = new MultiSelectList(companyMembers, "Id", "FullName", projectMembers);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken] 
+        public async Task<IActionResult> AssignMembers(ProjectMembersViewModel model)
+        {
+            if(model.SelectedUsers != null)
+            {
+                List<string> memberIds = (await _projectService.GetAllProjectMembersExceptPMAsync(model.Project.Id)).Select(m => m.Id).ToList();
+
+                // Remove current members 
+                foreach (string member in memberIds)
+                {
+                    await _projectService.RemoveUserFromProjectAsync(member, model.Project.Id);
+                }
+
+                // Add selected members 
+                foreach (string member in model.SelectedUsers) 
+                {
+                    await _projectService.AddUserToProjectAsync(member, model.Project.Id);
+                }
+
+                // Go to project details 
+                return RedirectToAction("Details", "Projects", new { id = model.Project.Id });
+            }
+
+            return RedirectToAction(nameof(AssignMembers), new { id = model.Project.Id });
         }
 
         // GET: Projects/Details/5
