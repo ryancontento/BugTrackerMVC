@@ -17,7 +17,7 @@
             <div class="col-12 col-sm-3 col-xl-2 px-sm-2 px-0 bg-dark d-flex sticky-top">
                 <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-center align-items-sm-start px-3 pt-2 text-white">
                     <a href="/" class="d-flex align-items-center pb-sm-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                        <span class="fs-5"><span class="d-none d-sm-inline">LaunchFlow</span> <br /> <small>Productive Team Solution</small></span>
+                        <span class="fs-5"><span class="d-none d-sm-inline">Launch Flow</span> <br /> <small>Productive Team Solution</small></span>
                     </a>
                     <partial name="_LoginPartial" />
 
@@ -39,7 +39,7 @@
                                     <i class="fs-5 bi-file-earmark-ppt"></i><span class="ms-1 d-none d-sm-inline">Projects</span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdown">
-                                    @if (User.IsInRole(nameof(Roles.Admin)) ||User.IsInRole(nameof(Roles.ProjectManager)))
+                                    @if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
                                     {
                                         <li><a class="dropdown-item" asp-area="" asp-controller="Projects" asp-action="Create">New project...</a></li>
                                     }
@@ -86,9 +86,9 @@
                 <main class="row">
                     @RenderBody()
                 </main>
-                <footer class="row bg-light py-4 mt-auto">
+                <footer class="row bg-dark py-4 mt-auto text-white">
                     <div class="container">
-                        &copy; 2022 - LaunchFlow - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        &copy; 2022 - Launch Flow - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                     </div>
                 </footer>
             </div>

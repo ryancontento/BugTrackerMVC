@@ -1,8 +1,42 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<BTUser> SignInManager
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<body>
+    <main id="hero">
+        <div class="container col-xxl-8 px-4 py-5">
+            <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+                <div class="col-10 col-sm-8 col-lg-6">
+                    <img src="https://www.dropbox.com/s/25lk5ur2qvxms7o/AppLandingPage.png?raw=1"
+                        class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700" height="500"
+                        loading="lazy">
+                </div>
+                <div class="col-lg-6">
+                    <h1 class="display-5 fw-bold lh-1 mb-3">Launch Flow</h1>
+                    <h5>Productive Team Solution.</h5>
+                    <p class="lead">A simple, fast and scalable bug tracking system that helps you manage bugs easily
+                        and deliver great products on time.
+                    </p>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                          <a class="btn btn-primary btn-lg px-4 me-md-2" asp-controller="Home" asp-action="Dashboard">Dashboard</a>  
+                        }
+                        else 
+                        {
+                        <a class="btn btn-primary btn-lg px-4 me-md-2" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                        <a class="btn btn-outline-primary btn-lg px-4" asp-area="Identity" asp-page="/Account/Login">Sign In</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+
+
