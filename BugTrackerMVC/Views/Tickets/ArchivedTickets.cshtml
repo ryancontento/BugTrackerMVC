@@ -32,7 +32,7 @@
                 @Html.DisplayNameFor(model => model.Archived)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TicketPriorityId)
+                @Html.DisplayNameFor(model => model.TicketPriority)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Project)
@@ -72,7 +72,7 @@
                     @Html.DisplayFor(modelItem => item.Archived)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.TicketPriorityId)
+                    @Html.DisplayFor(modelItem => item.TicketPriority.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Project.Name)

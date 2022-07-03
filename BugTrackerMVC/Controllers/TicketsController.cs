@@ -174,16 +174,14 @@ namespace BugTrackerMVC.Controllers
         }
 
         // POST: Tickets/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Description,ProjectId,TicketTypeId,TicketPriorityId,")] Ticket ticket)
         {
             BTUser btUser = await _userManager.GetUserAsync(User);
-
-            if (ModelState.IsValid)
-            {
+            // TODO: Fic ModelState
+            //if (ModelState.IsValid)
+            //{
 
                 ticket.Created = DateTimeOffset.Now;
                 ticket.OwnerUserId = btUser.Id;
@@ -192,12 +190,15 @@ namespace BugTrackerMVC.Controllers
 
                 await _ticketService.AddNewTicketAsync(ticket);
 
-                // TODO: Add Ticket History
+            // TODO: Add Ticket History
+            Ticket newTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id);
+            await _historyService.AddHistoryAsync(null, newTicket, btUser.Id);
 
                 // TODO: Add Ticket Notification
 
+
                 return RedirectToAction(nameof(Index));
-            }
+            //}
             if (User.IsInRole(nameof(Roles.Admin)))
             {
                 ViewData["ProjectId"] = new SelectList(await _projectService.GetAllProjectsByCompanyAsync(btUser.CompanyId), "Id", "Name");
@@ -270,6 +271,7 @@ namespace BugTrackerMVC.Controllers
 
             Ticket newTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id);
             await _historyService.AddHistoryAsync(oldTicket, newTicket, btUser.Id);
+
             return RedirectToAction(nameof(Index));
             //}
 
