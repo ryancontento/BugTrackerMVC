@@ -165,13 +165,13 @@
                             {
 
                                 <div class="">
-                                    <span class="date">@history.Created.ToString("dd MMM, yyyy")</span>
+                                    <span class="date"><strong>@history.Created.ToString("dd MMM, yyyy")</strong></span>
                                     <h6>@history.Description</h6>
                                     <span>By: <a href="" title="@history.User.FullName">@history.User.FullName</a></span>
                                     <div class="">
                                         <p>The ticket <b>@history.Property</b> was edited</p>
-                                        <p>@($"Previous {history.Property}: {history.OldValue}")</p>
-                                        <p>@($"Current {history.Property}: {history.NewValue}")</p>
+                                            <p>@($"Previous {history.Property}:") <span style="color:rgb(180, 0, 0)">@history.OldValue</span></p>
+                                            <p>@($"Current {history.Property}:") <span style="color:rgb(0, 120, 0)">@history.NewValue</span></p>
 
                                         <div class="media">
                                             <div class="media-body">
@@ -180,6 +180,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <hr />
                             }
                         </div>
 
